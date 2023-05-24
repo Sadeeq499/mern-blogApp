@@ -21,3 +21,13 @@ export const authGuard = async (req, res, next) => {
     throw new Error("Not authorized, no token");
   }
 };
+
+export const isAdmin = async (req, res, next) => {
+  if (req.user && req.user.isAdmin) {
+    next();
+  } else {
+    let err = new Error("Not Authorized as an Admin");
+    err.statusCode = 401;
+    next(err);
+  }
+};

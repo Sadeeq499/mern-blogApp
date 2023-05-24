@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import Cors from "cors";
 import connectDB from "./Config/db.js";
 import userRote from "./Routes/userRoute.js";
+import postRoute from "./Routes/postRoute.js";
 import path from "path";
 import express from "express";
 import { fileURLToPath } from "url";
@@ -38,6 +39,7 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 app.use("/api/users", userRote);
+app.use("/api/posts", postRoute);
 
 // static assets
 
