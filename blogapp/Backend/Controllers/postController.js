@@ -2,7 +2,9 @@ import { fileRemover } from "../helpers/fileRemover.js";
 import { uploadPicture } from "../middleware/pictureUpload.js";
 import Post from "../Models/PostModel.js";
 import { v4 as uuidv4 } from "uuid";
+import Comment from "../Models/CommentModel.js";
 
+// ---------------------------CreatePost -------------------------------------------------------
 export const CreatePostController = async (req, res, next) => {
   try {
     const post = new Post({
@@ -22,7 +24,7 @@ export const CreatePostController = async (req, res, next) => {
     next(error);
   }
 };
-
+// ----------------updatePOst---------------------------------------------
 export const UpdatePostController = async (req, res, next) => {
   try {
     const post = await Post.findOne({ slug: req.params.slug });
@@ -66,6 +68,29 @@ export const UpdatePostController = async (req, res, next) => {
           handleUpdatePostData(req.body.document);
         }
       }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// --------------------DeletePost------------------------------------------------
+
+export const DeletePostController = async (req, res, next) => {
+  try {
+    // check the post through slug amd delete the post
+    const post = await Post.findOneAndDelete({ slug: req.params.slug });
+
+    // if no post founded related to that slug then display the message
+    if (!post) {
+      const Err = new Error("Post not found");
+      next(Err);
+    }
+
+    // Deleted all the Comments on  that post
+    await Comment.deleteMany({ post: post._id });
+    return res.json({
+      message: "Post is Successfully Deleted",
     });
   } catch (error) {
     next(error);
