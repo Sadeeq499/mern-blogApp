@@ -8,7 +8,6 @@ export const errorResponseHandler = (err, req, res, next) => {
 };
 
 // create a path handler
-
 export const invalidPathHandler = (req, res, next) => {
   let error = new Error("Invalid Path");
   error.status = 400;

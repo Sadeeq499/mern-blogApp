@@ -5,13 +5,19 @@ import {
   CreatePostController,
   DeletePostController,
   UpdatePostController,
+  getAllPosts,
+  getPostController,
 } from "../Controllers/postController.js";
 
-router.post("/", authGuard, isAdmin, CreatePostController);
+router
+  .route("/")
+  .post(authGuard, isAdmin, CreatePostController)
+  .get(getAllPosts);
 // router.put("/:slug", authGuard, UpdatePostController);
 router
   .route("/:slug")
   .put(authGuard, UpdatePostController)
-  .delete(authGuard, isAdmin, DeletePostController);
+  .delete(authGuard, isAdmin, DeletePostController)
+  .get(getPostController);
 
 export default router;

@@ -96,3 +96,58 @@ export const DeletePostController = async (req, res, next) => {
     next(error);
   }
 };
+
+// ------------------------Get Post-------------------------------------------------------
+
+export const getPostController = async (req, res, next) => {
+  try {
+    const post = await Post.findOne({ slug: req.params.slug }).populate([
+      {
+        path: "user",
+        select: ["name", "avatar"],
+      },
+      {
+        path: "comments",
+        match: {
+          check: true,
+          parent: null,
+        },
+        populate: [
+          {
+            path: "user",
+            select: ["avatar", "name"],
+          },
+          {
+            path: "replies",
+            match: {
+              check: true,
+            },
+          },
+        ],
+      },
+    ]);
+
+    if (!post) {
+      const err = new Error("Post not found");
+      next(err);
+    }
+    return res.json(post);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// --------------------------------Get All Posts--------------------------------
+export const getAllPosts = async (req, res, next) => {
+  try {
+    const posts = await Post.find({}).populate([
+      {
+        path: "user",
+        select: ["avatar", "name", "verified"],
+      },
+    ]);
+    res.json(posts);
+  } catch (error) {
+    next(error);
+  }
+};

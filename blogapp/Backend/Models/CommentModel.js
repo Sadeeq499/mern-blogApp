@@ -17,8 +17,14 @@ const CommentSchema = new Schema(
       default: null,
     },
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true } }
 );
+
+CommentSchema.virtual("replies", {
+  ref: "Comment",
+  localField: "_id",
+  foreignField: "parent",
+});
 
 const Comment = model("Comment", CommentSchema);
 
