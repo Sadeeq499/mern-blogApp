@@ -4,6 +4,8 @@ import { AiOutlineArrowRight } from "react-icons/ai";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAllPosts } from "../../Service/index/posts";
 import { toast } from "react-hot-toast";
+import ArticleCardSkeleton from "../../Components/ArticleCardSkeleton";
+import ErrorMessage from "../../Components/ErrorMessage";
 
 function Article() {
   const { data, isLoading, isError } = useQuery({
@@ -18,17 +20,35 @@ function Article() {
   return (
     <section className="container mx-auto px-5">
       <div className=" flex flex-wrap md:gap-x-5 gap-y-5">
-        {!isLoading &&
-          !isError &&
-          data.map((post) => {
-            return (
-              <ArticleCard
-                key={post._id}
-                post={post}
-                className="w-full   md:w-[calc(50%-20px)]  lg:w-[calc(33.33%-21px)]"
-              />
-            );
-          })}
+        {
+          // ---------------if loading-----------------
+          isLoading ? (
+            [...Array(3)].map((item, index) => {
+              return (
+                <ArticleCardSkeleton
+                  key={index}
+                  className={
+                    "w-full   md:w-[calc(50%-20px)]  lg:w-[calc(33.33%-21px)]"
+                  }
+                />
+              );
+            })
+          ) : // ----------------------else-if error -------------------------------------------
+          isError ? (
+            <ErrorMessage message={"Oops Something went wrong"} />
+          ) : (
+            // ---------else render the cards -------------------------------------------------------------
+            data.map((post) => {
+              return (
+                <ArticleCard
+                  key={post._id}
+                  post={post}
+                  className="w-full   md:w-[calc(50%-20px)]  lg:w-[calc(33.33%-21px)]"
+                />
+              );
+            })
+          )
+        }
       </div>
       <button className="mx-auto flex items-center mt-14 rounded-lg w-[200px] h-[40] font-bold text-primary border-2 border-blue-600 p-3 hover:bg-primary hover:text-white ">
         <span className="font-bold text-center mx-auto font-roboto">

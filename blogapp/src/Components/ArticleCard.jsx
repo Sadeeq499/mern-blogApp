@@ -4,6 +4,7 @@ import { AiFillCheckCircle } from "react-icons/ai";
 import { VscVerifiedFilled } from "react-icons/vsc";
 import { GoUnverified } from "react-icons/go";
 import { FaUserCircle } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 function ArticleCard({ post, className }) {
   return (
@@ -11,17 +12,21 @@ function ArticleCard({ post, className }) {
       <div
         className={`rounded-xl overflow-hidden shadow-[rgba(13,_38,_76,_0.19)_0px_9px_20px] ${className}`}
       >
-        <img
-          src={
-            post.photo
-              ? stables.UPLOAD_FOLDER_BASE_URL + post.photo
-              : images.imageNotFound
-          }
-          alt="first article"
-          className="w-full  object-cover object-center h-[300px]"
-        />
+        <Link to={`/blog/${post.slug}`}>
+          <img
+            src={
+              post.photo
+                ? stables.UPLOAD_FOLDER_BASE_URL + post.photo
+                : images.imageNotFound
+            }
+            alt="first article"
+            className="w-full  object-cover object-center h-[300px]"
+          />
+        </Link>
         <div className="p-5">
-          <h1 className="text-2xl font-bold mb-2">{post.title}</h1>
+          <Link to={`/blog/${post.slug}`}>
+            <h1 className="text-2xl font-bold mb-2">{post.title}</h1>
+          </Link>
           <p className="text-sm text-gray-500 mb-2">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
             voluptatum.

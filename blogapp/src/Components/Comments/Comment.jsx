@@ -1,5 +1,5 @@
 import React from "react";
-import { images } from "../../constants";
+import { images, stables } from "../../constants";
 import { MdOutlineQuickreply, MdOutlineDeleteOutline } from "react-icons/md";
 import { FiEdit2 } from "react-icons/fi";
 import CommentForm from "./CommentForm";
@@ -33,7 +33,11 @@ function Comment({
     <div className=" flex flex-nowrap items-start gap-x-3 bg-[#F2FAF5] p-3 rounded-lg">
       {/* user profile */}
       <img
-        src={images.avatar1}
+        src={
+          comment?.user.avatar
+            ? stables.UPLOAD_FOLDER_BASE_URL + comment.user.avatar
+            : images.imageNotFound
+        }
         alt="profile"
         className="w-10 h-10 rounded-full object-cover"
       />
