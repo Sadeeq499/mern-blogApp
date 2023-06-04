@@ -5,14 +5,21 @@ import { VscVerifiedFilled } from "react-icons/vsc";
 import { GoUnverified } from "react-icons/go";
 import { FaUserCircle } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 function ArticleCard({ post, className }) {
+  const AuthToken = useSelector((state) => state.user.userInfo);
+
   return (
     <>
       <div
         className={`rounded-xl overflow-hidden shadow-[rgba(13,_38,_76,_0.19)_0px_9px_20px] ${className}`}
       >
-        <Link to={`/blog/${post.slug}`}>
+        {/* if user has a token then leave it to deati page else show login first message */}
+        <Link
+          to={AuthToken != null ? `/blog/${post.slug}` : "/login"}
+          // to={`blog/${post.slug}`}
+        >
           <img
             src={
               post.photo

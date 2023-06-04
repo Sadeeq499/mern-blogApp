@@ -5,6 +5,7 @@ function CommentForm({
   formSubmitHandler,
   CancelHandler,
   initialText,
+  isLoading,
 }) {
   const [value, setValue] = useState(initialText || "");
 
@@ -38,6 +39,7 @@ function CommentForm({
 
             {/* submit button in textArea */}
             <button
+              disabled={isLoading}
               type="submit"
               className="px-6 py-2.5 bg-primary text-white rounded-lg mt-4"
             >

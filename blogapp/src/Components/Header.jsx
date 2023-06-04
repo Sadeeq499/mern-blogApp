@@ -81,6 +81,7 @@ function Header() {
   // functions
   const logoutHandler = () => {
     dispatch(logout());
+    navigate("/login");
   };
 
   // navbar toggle
