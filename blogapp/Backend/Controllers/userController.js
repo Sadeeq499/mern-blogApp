@@ -26,6 +26,7 @@ export const registerController = async (req, res, next) => {
       email: user.email,
       password: user.password,
       avatar: user.avatar,
+      isAdmin: user.isAdmin,
       token: await user.generateToken(),
     });
   } catch (error) {
@@ -52,6 +53,7 @@ export const loginController = async (req, res, next) => {
       email: user.email,
       password: user.password,
       avatar: user.avatar,
+      isAdmin: user.isAdmin,
       token: await user.generateToken(),
     });
   } catch (error) {
@@ -62,6 +64,7 @@ export const loginController = async (req, res, next) => {
 // user profile controller
 export const userProfileController = async (req, res, next) => {
   try {
+    // in this case we have only sent the auth token from frontend now it's gonna verify through id
     let user = await User.findById(req.user._id);
     // console.log("user profile co", user);
     if (!user) {
