@@ -34,10 +34,12 @@ const ManuItems = [
     type: "collapse",
     items: [
       {
+        name: "new",
         title: "New",
         link: "/admin/posts/new",
       },
       {
+        name: "manage",
         title: "Manage",
         link: "/admin/posts/manage",
       },
@@ -72,17 +74,17 @@ function Header() {
 
       {/* burger menu  icons */}
       <div className="cursor-pointer lg:hidden">
-      {isMenuOpen ? (
-        <AiOutlineClose
-          className="text-3xl lg:hidden"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        />
-      ) : (
-        <AiOutlineMenu
-          className="text-3xl lg:hidden"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        />
-      )}
+        {isMenuOpen ? (
+          <AiOutlineClose
+            className="text-3xl lg:hidden"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          />
+        ) : (
+          <AiOutlineMenu
+            className="text-3xl lg:hidden"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          />
+        )}
       </div>
 
       {/* sidebar container */}
@@ -92,45 +94,45 @@ function Header() {
           <div
             className="fixed inset-0 bg-black opacity-50 lg:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-         />
-            {/* sidebar */}
-            <div
-              className="fixed bottom-0 left-0 top-0 z-50 w-3/4 overflow-y-auto bg-white p-5
+          />
+          {/* sidebar */}
+          <div
+            className="fixed bottom-0 left-0 top-0 z-50 w-3/4 overflow-y-auto bg-white p-5
               lg:static lg:h-full lg:w-full lg:p-6
             "
-            >
-              <Link to={"/"}>
-                <img src={images.Logo} alt="logo" className="w-20" />
-              </Link>
-              <h4 className=" mt-10 text-2xl font-semibold">Main Menu</h4>
+          >
+            <Link to={"/"}>
+              <img src={images.Logo} alt="logo" className="w-20" />
+            </Link>
+            <h4 className=" mt-10 text-2xl font-semibold">Main Menu</h4>
 
-              {/* menu items */}
-              <div className="mt-6 flex flex-col gap-y-[0.563rem]">
-                {ManuItems.map((item, index) =>
-                  item.type === "link" ? (
-                    <NavItem
-                      key={index}
-                      title={item.title}
-                      icon={item.icon}
-                      link={item.link}
-                      active={active}
-                      setActive={setActive}
-                      name={item.name}
-                    />
-                  ) : (
-                    <NavCollapse
-                      key={index}
-                      title={item.title}
-                      icon={item.icon}
-                      items={item.items}
-                      active={active}
-                      setActive={setActive}
-                      name={item.name}
-                    />
-                  )
-                )}
-              </div>
+            {/* menu items */}
+            <div className="mt-6 flex flex-col gap-y-[0.563rem]">
+              {ManuItems.map((item, index) =>
+                item.type === "link" ? (
+                  <NavItem
+                    key={index}
+                    title={item.title}
+                    icon={item.icon}
+                    link={item.link}
+                    active={active}
+                    setActive={setActive}
+                    name={item.name}
+                  />
+                ) : (
+                  <NavCollapse
+                    key={index}
+                    title={item.title}
+                    icon={item.icon}
+                    items={item.items}
+                    active={active}
+                    setActive={setActive}
+                    name={item.name}
+                  />
+                )
+              )}
             </div>
+          </div>
         </div>
       )}
     </header>

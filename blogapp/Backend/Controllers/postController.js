@@ -146,13 +146,41 @@ export const getPostController = async (req, res, next) => {
 // --------------------------------Get All Posts--------------------------------
 export const getAllPosts = async (req, res, next) => {
   try {
-    const posts = await Post.find({}).populate([
-      {
-        path: "user",
-        select: ["avatar", "name", "verified"],
-      },
-    ]);
-    res.json(posts);
+    const filter = req.query.searchKey;
+    let where = {};
+    if (filter) {
+      where.title = { $regex: filter, $options: "i" };
+    }
+    let query = Post.find(where);
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * pageSize;
+    const total = await Post.countDocuments();
+    const pages = Math.ceil(total / pageSize);
+
+    if (page > pages) {
+      const err = new Error("Page not found");
+      next(err);
+    }
+    const results = await query
+      .skip(skip)
+      .limit(pageSize)
+      .populate([
+        {
+          path: "user",
+          select: ["avatar", "name", "verified"],
+        },
+      ])
+      .sort({ createdAt: -1 });
+
+    res.header({
+      "X-Total-Count": JSON.stringify(total),
+      "X-Total-Pages": JSON.stringify(pages),
+      "X-Current-Page": JSON.stringify(page),
+      "X-Filter": JSON.stringify(filter),
+      "X-Page-Size": JSON.stringify(pageSize),
+    });
+    res.json(results);
   } catch (error) {
     next(error);
   }

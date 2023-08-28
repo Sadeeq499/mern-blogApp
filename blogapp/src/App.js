@@ -10,21 +10,37 @@ import AdminLayout from "./Pages/Admin/AdminLayout";
 import Admin from "./Pages/Admin/Components/Pages/Admin";
 import Comments from "./Pages/Admin/Components/Pages/Comments";
 import NewPosts from "./Pages/Admin/Components/Pages/NewPosts";
+import { useEffect, useState } from "react";
+import Loader from "./Components/Loader";
+import Manage from "./Pages/Admin/Components/Pages/Manage";
 function App() {
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // Simulating an asynchronous operation
+    setTimeout(() => {
+      setIsLoading(true);
+    }, 2000); // Adjust the delay as needed
+  }, []);
   return (
     <>
-      <Routes>
-        <Route index path="/" element={<HomePage />} />
-        <Route path="/blog/:slug" element={<ArticleDetailPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<Admin />} />
-          <Route path="comments" element={<Comments />} />
-          <Route path="posts/new" element={<NewPosts />} />
-        </Route>
-      </Routes>
+      {isLoading ? (
+        <Routes>
+          <Route index path="/" element={<HomePage />} />
+          <Route path="/blog/:slug" element={<ArticleDetailPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Admin />} />
+            <Route path="comments" element={<Comments />} />
+            <Route path="posts/new" element={<NewPosts />} />
+            <Route path="posts/manage" element={<Manage />} />
+          </Route>
+        </Routes>
+      ) : (
+        <Loader />
+      )}
 
       <Toaster />
     </>

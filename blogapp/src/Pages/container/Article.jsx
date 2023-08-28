@@ -19,7 +19,7 @@ function Article() {
 
   return (
     <section className="container mx-auto px-5">
-      <div className=" flex flex-wrap md:gap-x-5 gap-y-5">
+      <div className=" flex flex-wrap gap-y-5 md:gap-x-5">
         {
           // ---------------if loading-----------------
           isLoading ? (
@@ -38,7 +38,7 @@ function Article() {
             <ErrorMessage message={"Oops Something went wrong"} />
           ) : (
             // ---------else render the cards -------------------------------------------------------------
-            data.map((post) => {
+            data.data.map((post) => {
               return (
                 <ArticleCard
                   key={post._id}
@@ -50,12 +50,12 @@ function Article() {
           )
         }
       </div>
-      <button className="mx-auto flex items-center mt-14 rounded-lg w-[200px] h-[40] font-bold text-primary border-2 border-blue-600 p-3 hover:bg-primary hover:text-white ">
-        <span className="font-bold text-center mx-auto font-roboto">
+      <button className="mx-auto mt-14 flex h-[40] w-[200px] items-center rounded-lg border-2 border-blue-600 p-3 font-bold text-primary hover:bg-primary hover:text-white ">
+        <span className="mx-auto text-center font-roboto font-bold">
           More articles
         </span>
         <span className="">
-          <AiOutlineArrowRight className="w-5 h-5" />
+          <AiOutlineArrowRight className="h-5 w-5" />
         </span>
       </button>
     </section>

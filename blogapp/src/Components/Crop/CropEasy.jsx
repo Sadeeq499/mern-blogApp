@@ -57,10 +57,10 @@ function CropEasy({ photo, setOpenCrop }) {
   };
 
   return (
-    <div className="fixed z-[1000] inset-0 bg-black/50 flex justify-center p-5 overflow-hidden">
-      <div className="bg-white h-fit w-full sm:max-w-[350px] p-5 rounded-lg ">
-        <h2 className="font-semibold text-dark-hard mb-2">Crop Image</h2>
-        <div className="relative w-full aspect-square rounded-lg overflow-hidden ">
+    <div className="fixed inset-0 z-[1000] flex justify-center overflow-hidden bg-black/50 p-5">
+      <div className="h-fit w-full rounded-lg bg-white p-5 sm:max-w-[350px] ">
+        <h2 className="mb-2 font-semibold text-dark-hard">Crop Image</h2>
+        <div className="relative aspect-square w-full overflow-hidden rounded-lg ">
           <Cropper
             image={photo?.url}
             crop={crop}
@@ -74,7 +74,7 @@ function CropEasy({ photo, setOpenCrop }) {
         <div>
           <label
             htmlFor="zoomRange"
-            className="block mt-2 mb-0.5 text-sm font-medium text-gray-900"
+            className="mb-0.5 mt-2 block text-sm font-medium text-gray-900"
           >
             Zoom: {`${Math.round(zoom * 100)}%`}
           </label>
@@ -86,13 +86,13 @@ function CropEasy({ photo, setOpenCrop }) {
             step={0.1}
             value={zoom}
             onChange={(e) => setZoom(e.target.value)}
-            className="w-full h-1 mb-6 bg-gray-200 rounded-lg appearance-none cursor-pointer range-sm"
+            className="range-sm mb-6 h-1 w-full cursor-pointer appearance-none rounded-lg bg-gray-200"
           />
         </div>
-        <div className="flex justify-between gap-2 flex-wrap">
+        <div className="flex flex-wrap justify-between gap-2">
           <button
             onClick={() => setOpenCrop(false)}
-            className="px-5 py-2.5 rounded-lg text-red-500 border border-red-500 text-sm disabled:opacity-70 "
+            className="rounded-lg border border-red-500 px-5 py-2.5 text-sm text-red-500 disabled:opacity-70 "
           >
             Cancel
           </button>
@@ -100,7 +100,7 @@ function CropEasy({ photo, setOpenCrop }) {
           <button
             onClick={handleCropImage}
             disabled={isLoading}
-            className="px-5 py-2.5 rounded-lg text-white bg-blue-500 text-sm disabled:opacity-70 "
+            className="rounded-lg bg-blue-500 px-5 py-2.5 text-sm text-white disabled:opacity-70 "
           >
             Crop & Upload
           </button>

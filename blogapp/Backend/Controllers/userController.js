@@ -76,6 +76,7 @@ export const userProfileController = async (req, res, next) => {
       name: user.name,
       email: user.email,
       avatar: user.avatar,
+      isAdmin: user.isAdmin,
     });
   } catch (error) {
     next(error);
