@@ -8,16 +8,10 @@ import CommentContainer from "../../Components/Comments/CommentContainer";
 import SocialShareButton from "../../Components/SocialShareButton";
 import { useQuery } from "@tanstack/react-query";
 import { getAllPosts, getSinglePost } from "../../Service/index/posts";
-import { generateHTML } from "@tiptap/html";
-import Bold from "@tiptap/extension-bold";
-import italic from "@tiptap/extension-italic";
-import Text from "@tiptap/extension-text";
-import paragraph from "@tiptap/extension-paragraph";
-import Document from "@tiptap/extension-document";
-import parse from "html-react-parser";
 import ArticleDetailSkeleton from "./components/ArticleDetailPageSkeleton";
 import ErrorMessage from "../../Components/ErrorMessage";
 import { useSelector } from "react-redux";
+import { parseJsonToHtml } from "../../../src/Components/Helper/BodyPraser";
 
 function ArticleDetailPage() {
   //--------------------------------------------------------------
@@ -37,11 +31,7 @@ function ArticleDetailPage() {
         { name: "Blog", link: "/blog" },
         { name: "Article title", link: `/blog/${data.slug}` },
       ]);
-      setBody(
-        parse(
-          generateHTML(data?.body, [Bold, italic, Text, paragraph, Document])
-        )
-      );
+      setBody(parseJsonToHtml(data?.body));
     },
   });
 
@@ -54,7 +44,7 @@ function ArticleDetailPage() {
   // ---------------------------------------------------------------------------------------------------
   return (
     <MainLayout>
-      <section className="container mx-auto max-w-5xl flex flex-col px-5 py-5 lg:flex-row lg:gap-x-5 lg:items-start">
+      <section className="container mx-auto flex max-w-5xl flex-col px-5 py-5 lg:flex-row lg:items-start lg:gap-x-5">
         {isLoading ? (
           <ArticleDetailSkeleton />
         ) : isError ? (
@@ -69,7 +59,7 @@ function ArticleDetailPage() {
                     ? stables.UPLOAD_FOLDER_BASE_URL + data?.photo
                     : images.imageNotFound
                 }
-                className="w-full rounded-xl mt-5 md:w-full mx-auto "
+                className="mx-auto mt-5 w-full rounded-xl md:w-full "
                 alt={data?.title}
               />
               <div className="mt-4 flex gap-2">
@@ -77,17 +67,17 @@ function ArticleDetailPage() {
                   return (
                     <Link
                       to={`/blog?category = ${category.name}`}
-                      className="text-primary font-roboto inline-block mt-5  md:font-bold md:text-lg"
+                      className="mt-5 inline-block font-roboto text-primary  md:text-lg md:font-bold"
                     >
                       {category.name}
                     </Link>
                   );
                 })}
               </div>
-              <h1 className="text-3xl font-medium font-roboto mt-5 text-dark-hard">
+              <h1 className="mt-5 font-roboto text-3xl font-medium text-dark-hard">
                 {data?.title}
               </h1>
-              <div className="flex items-center mt-5 text-dark-soft mb-10">
+              <div className="mb-10 mt-5 flex items-center text-dark-soft">
                 {body}
               </div>
               <CommentContainer
@@ -104,7 +94,7 @@ function ArticleDetailPage() {
                 className={"mt-8 lg:mt-16 lg:max-w-xs"}
               />
               <div className="mt-7">
-                <h2 className="text-2xl font-medium font-roboto mt-5 text-dark-hard">
+                <h2 className="mt-5 font-roboto text-2xl font-medium text-dark-hard">
                   Share on:
                 </h2>
                 <SocialShareButton

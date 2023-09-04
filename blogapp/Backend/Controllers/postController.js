@@ -153,14 +153,21 @@ export const getAllPosts = async (req, res, next) => {
     }
     let query = Post.find(where);
     const page = parseInt(req.query.page) || 1;
-    const pageSize = parseInt(req.query.limit) || 10;
+    const pageSize = parseInt(req.query.limit) ||10;
     const skip = (page - 1) * pageSize;
-    const total = await Post.countDocuments();
+    const total = await Post.find(where).countDocuments();
     const pages = Math.ceil(total / pageSize);
+    
+    res.header({
+      "X_Total_Count": JSON.stringify(total),
+      "X_Total_Pages": JSON.stringify(pages),
+      "X_Current_Page": JSON.stringify(page),
+      "X_Filter": JSON.stringify(filter),
+      "X_Page_Size": JSON.stringify(pageSize),
+    });
 
     if (page > pages) {
-      const err = new Error("Page not found");
-      next(err);
+       return res.json([]);
     }
     const results = await query
       .skip(skip)
@@ -173,13 +180,7 @@ export const getAllPosts = async (req, res, next) => {
       ])
       .sort({ createdAt: -1 });
 
-    res.header({
-      "X-Total-Count": JSON.stringify(total),
-      "X-Total-Pages": JSON.stringify(pages),
-      "X-Current-Page": JSON.stringify(page),
-      "X-Filter": JSON.stringify(filter),
-      "X-Page-Size": JSON.stringify(pageSize),
-    });
+    
     res.json(results);
   } catch (error) {
     next(error);

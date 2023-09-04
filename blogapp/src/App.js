@@ -13,6 +13,7 @@ import NewPosts from "./Pages/Admin/Components/Pages/NewPosts";
 import { useEffect, useState } from "react";
 import Loader from "./Components/Loader";
 import Manage from "./Pages/Admin/Components/Pages/Manage";
+import EditPage from "./Pages/Admin/Components/Pages/EditPage"
 function App() {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -36,6 +37,7 @@ function App() {
             <Route path="comments" element={<Comments />} />
             <Route path="posts/new" element={<NewPosts />} />
             <Route path="posts/manage" element={<Manage />} />
+            <Route path="posts/manage/edit/:slug" element={<EditPage />} />
           </Route>
         </Routes>
       ) : (

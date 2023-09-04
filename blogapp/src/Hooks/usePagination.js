@@ -2,7 +2,7 @@ import { useMemo } from "react";
 
 export const DOTS = "...";
 
-export const usePagination = ({
+export const UsePagination = ({
   siblingCount = 1,
   currentPage,
   totalPageCount,

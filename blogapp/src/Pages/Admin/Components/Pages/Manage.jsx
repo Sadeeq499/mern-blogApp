@@ -1,14 +1,21 @@
-import React, { useState } from "react";
-import { getAllPosts } from "../../../../Service/index/posts";
-import { useQuery } from "@tanstack/react-query";
-import { toast } from "react-hot-toast";
-import Loader from "../../../../Components/Loader";
+import React, { useState, useEffect } from "react";
+// utilities
 import { images, stables } from "../../../../constants";
+import { deletePost, getAllPosts } from "../../../../Service/index/posts";
+// components
+import Pagination from "../../../../Components/pagination";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+// styling
+import { toast } from "react-hot-toast";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 function Manage() {
   // ===========================hooks============================
   const [search, setSearch] = React.useState("");
   const [currentPage, setCurrentPage] = React.useState(1);
+  const userState = useSelector((state) => state.user.userInfo);
+  const queryClient = useQueryClient();
 
   // ==================================== useQuery ==============================
   const { data, isLoading, isFetching, refetch } = useQuery({
@@ -20,11 +27,44 @@ function Manage() {
     },
   });
 
+  const { mutate: deleteUserPosts, isLoading: loadingPostDelete } = useMutation(
+    {
+      mutationFn: ({ token, slug }) => {
+        return deletePost({
+          token,
+          slug,
+        });
+      },
+      onSuccess: (data) => {
+        queryClient.invalidateQueries(["posts"]);
+        toast.success("Post Deleted Successfully");
+      },
+      onError: (error) => {
+        toast.error(error.message);
+        console.log(error);
+      },
+    }
+  );
+
+  useEffect(() => {
+    refetch();
+  }, [refetch, currentPage]);
+
   // ================================functions==============================
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setCurrentPage(1);
     refetch();
+  };
+
+  const handleDeletePost = (slug) => {
+    try {
+      deleteUserPosts({ token: userState.token, slug });
+    } catch (error) {
+      toast.error(error.message);
+      console.log(error);
+    }
   };
 
   //   ================================jsx==============================
@@ -98,8 +138,22 @@ function Manage() {
               <tbody>
                 {isLoading || isFetching ? (
                   <tr>
-                    <td colSpan={5} className="w-full py-32">
-                      <Loader />
+                    <td colSpan={5}>
+                      <div className="flex w-full items-center justify-center py-32 ">
+                        <h1 className="text-2xl font-bold text-gray-400">
+                          Loading...
+                        </h1>
+                      </div>
+                    </td>
+                  </tr>
+                ) : data?.data?.length === 0 ? (
+                  <tr>
+                    <td colSpan={12}>
+                      <div className="flex w-full items-center justify-center py-32">
+                        <h1 className="text-2xl font-bold text-gray-400">
+                          No Posts Found
+                        </h1>
+                      </div>
                     </td>
                   </tr>
                 ) : (
@@ -150,9 +204,9 @@ function Manage() {
                       <td className="border-b border-gray-200 bg-white  py-5 text-sm">
                         <div className="flex flex-col gap-y-3">
                           {post?.tags.length > 0 ? (
-                            post?.tags.map((tag) => (
+                            post?.tags.map((tag, index) => (
                               <span
-                                key={tag.id}
+                                key={index}
                                 className=" w-32 items-center rounded-full bg-gray-100 px-2  py-1 text-center text-xs font-medium text-gray-800 transition duration-300 ease-in-out hover:bg-blue-600 hover:text-white"
                               >
                                 {tag}
@@ -165,14 +219,20 @@ function Manage() {
                           )}
                         </div>
                       </td>
-                      <td className="border-b border-gray-200 bg-white  py-5 text-sm">
-                        <div
-                          style={{
-                            cursor: "pointer",
-                            color: "blue",
-                          }}
-                        >
-                          Edit
+                      <td className="border-b border-gray-200 bg-white  py-5">
+                        <div className="flex gap-10">
+                          <button
+                            onClick={() => handleDeletePost(post?.slug)}
+                            className="cursor-pointer text-red-600 hover:text-red-900"
+                          >
+                            Delete
+                          </button>
+                          <Link
+                            to={`/admin/posts/manage/edit/${post?.slug}`}
+                            className="cursor-pointer text-blue-600 hover:text-blue-900"
+                          >
+                            Edit
+                          </Link>
                         </div>
                       </td>
                     </tr>
@@ -180,64 +240,13 @@ function Manage() {
                 )}
               </tbody>
             </table>
-            <div className="xs:flex-row xs:justify-between flex flex-col items-center bg-white px-5 py-5">
-              <div className="flex items-center">
-                <button
-                  type="button"
-                  className="w-full rounded-l-xl border bg-white p-4 text-base text-gray-600 hover:bg-gray-100"
-                >
-                  <svg
-                    width={9}
-                    fill="currentColor"
-                    height={8}
-                    viewBox="0 0 1792 1792"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M1427 301l-531 531 531 531q19 19 19 45t-19 45l-166 166q-19 19-45 19t-45-19l-742-742q-19-19-19-45t19-45l742-742q19-19 45-19t45 19l166 166q19 19 19 45t-19 45z"></path>
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  className="w-full border-b border-t bg-white px-4 py-2 text-base text-indigo-500 hover:bg-gray-100"
-                >
-                  1
-                </button>
-
-                <button
-                  type="button"
-                  className="w-full border bg-white px-4 py-2 text-base text-gray-600 hover:bg-gray-100"
-                >
-                  2
-                </button>
-                <button
-                  type="button"
-                  className="w-full border-b border-t bg-white px-4 py-2 text-base text-gray-600 hover:bg-gray-100"
-                >
-                  3
-                </button>
-                <button
-                  type="button"
-                  className="w-full border bg-white px-4 py-2 text-base text-gray-600 hover:bg-gray-100"
-                >
-                  4
-                </button>
-                <button
-                  type="button"
-                  className="w-full rounded-r-xl border-b border-r border-t bg-white p-4 text-base text-gray-600 hover:bg-gray-100"
-                >
-                  <svg
-                    width={9}
-                    fill="currentColor"
-                    height={8}
-                    className=""
-                    viewBox="0 0 1792 1792"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M1363 877l-742 742q-19 19-45 19t-45-19l-166-166q-19-19-19-45t19-45l531-531-531-531q-19-19-19-45t19-45l166-166q19-19 45-19t45 19l742 742q19 19 19 45t-19 45z"></path>
-                  </svg>
-                </button>
-              </div>
-            </div>
+            {!isLoading && (
+              <Pagination
+                onPageChange={(page) => setCurrentPage(page)}
+                currentPage={currentPage}
+                totalPageCount={JSON.parse(data?.headers?.["x_total_pages"])}
+              />
+            )}
           </div>
         </div>
       </div>
