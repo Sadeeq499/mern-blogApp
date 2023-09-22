@@ -9,6 +9,7 @@ import { HiOutlineCamera } from "react-icons/hi";
 import { getSinglePost, updatePost } from "../../../../Service/index/posts";
 import { toast } from "react-hot-toast";
 import { useSelector } from "react-redux";
+import Editor from "../../../../Editor/Editor";
 
 function EditPage() {
   const { slug } = useParams();
@@ -45,7 +46,7 @@ function EditPage() {
   useEffect(() => {
     if (!isLoading && !isError) {
       setInitialPhoto(data?.photo);
-      setBody(parseJsonToHtml(data?.body));
+      // setBody(parseJsonToHtml(data?.body));
     }
   }, [data, isError, isLoading]);
 
@@ -67,7 +68,7 @@ function EditPage() {
       const file = urlToObject(stables.UPLOAD_FOLDER_BASE_URL + data?.photo);
       updateData.append("postPicture", file);
     }
-    updateData.append("document", JSON.stringify({}));
+    updateData.append("document", JSON.stringify({ body }));
 
     mutateUpdatePost({ updateData, slug, token: userState.token });
   };
@@ -96,7 +97,7 @@ function EditPage() {
                 />
               ) : (
                 <div
-                  className="mt-5  flex h-96 w-full
+                  className="mt-5  flex h-72 w-full
                   cursor-pointer items-center justify-center rounded-md bg-blue-50/50
                 
                 "
@@ -127,8 +128,14 @@ function EditPage() {
             <h1 className="mt-5 font-roboto text-3xl font-medium text-dark-hard">
               {data?.title}
             </h1>
-            <div className="mb-10 mt-5 flex items-center text-dark-soft">
-              {body}
+            <div className=" w-full">
+              {!isLoading && !isError && (
+                <Editor
+                  content={data?.body}
+                  onDataChange={(data) => setBody(data)}
+                  editable={true}
+                />
+              )}
             </div>
             <button
               className="rounded-md bg-primary px-5 py-2 text-white"

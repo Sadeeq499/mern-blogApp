@@ -16,7 +16,6 @@ import Manage from "./Pages/Admin/Components/Pages/Manage";
 import EditPage from "./Pages/Admin/Components/Pages/EditPage"
 function App() {
   const [isLoading, setIsLoading] = useState(false);
-
   useEffect(() => {
     // Simulating an asynchronous operation
     setTimeout(() => {

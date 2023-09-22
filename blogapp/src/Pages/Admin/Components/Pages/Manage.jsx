@@ -165,9 +165,9 @@ function Manage() {
                             <a href="#" className="relative block">
                               <img
                                 src={
-                                  post?.image
+                                  post?.photo
                                     ? stables.UPLOAD_FOLDER_BASE_URL +
-                                      post?.image
+                                      post?.photo
                                     : images.imageNotFound
                                 }
                                 alt="profil"

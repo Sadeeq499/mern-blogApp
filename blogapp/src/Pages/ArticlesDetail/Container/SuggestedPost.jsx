@@ -9,7 +9,7 @@ function SuggestedPost({ className, Header, post = [], tags }) {
     >
       <h1 className="mb-2 font-roboto font-bold text-dark-hard">{Header}</h1>
       <div className="mt-5 grid gap-y-5 md:grid-cols-2 md:gap-x-5 lg:grid-cols-1 lg:gap-x-5">
-        {post?.data.map((item, index) => (
+        {post?.data?.map((item, index) => (
           <div key={index} className="flex flex-nowrap items-center space-x-3">
             <img
               src={

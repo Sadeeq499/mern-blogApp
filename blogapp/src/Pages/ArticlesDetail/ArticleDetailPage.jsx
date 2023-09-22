@@ -12,6 +12,7 @@ import ArticleDetailSkeleton from "./components/ArticleDetailPageSkeleton";
 import ErrorMessage from "../../Components/ErrorMessage";
 import { useSelector } from "react-redux";
 import { parseJsonToHtml } from "../../../src/Components/Helper/BodyPraser";
+import Editor from "../../Editor/Editor";
 
 function ArticleDetailPage() {
   //--------------------------------------------------------------
@@ -77,8 +78,10 @@ function ArticleDetailPage() {
               <h1 className="mt-5 font-roboto text-3xl font-medium text-dark-hard">
                 {data?.title}
               </h1>
-              <div className="mb-10 mt-5 flex items-center text-dark-soft">
-                {body}
+              <div className="w-full">
+                {!isLoading && !isError && (
+                  <Editor content={data?.body} editable={false} />
+                )}
               </div>
               <CommentContainer
                 loginUserId={userState?.userInfo?._id}
