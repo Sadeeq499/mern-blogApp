@@ -1,3 +1,5 @@
+import { useRef } from "react";
+import { useCallback } from "react";
 import {
   AiOutlineBold,
   AiOutlineClose,
@@ -12,10 +14,31 @@ import {
 import { BiParagraph } from "react-icons/bi";
 import { FiCode } from "react-icons/fi";
 import { MdOutlineLayersClear } from "react-icons/md";
-import { PiCodeBlock, PiQuotes } from "react-icons/pi";
+import { PiCodeBlock, PiQuotes, PiImageSquareBold } from "react-icons/pi";
 import { TbSpacingVertical } from "react-icons/tb";
 
 const MenuBar = ({ editor }) => {
+  const fileInputRef = useRef(null);
+
+  const handleFileChange = useCallback(
+    (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          editor.chain().focus().setImage({ src: e.target.result }).run();
+        };
+
+        reader.readAsDataURL(file);
+      }
+    },
+    [editor]
+  );
+
+  const handleAddImage = useCallback(() => {
+    fileInputRef.current.click();
+  }, []);
+
   if (!editor) {
     return null;
   }
@@ -125,6 +148,22 @@ const MenuBar = ({ editor }) => {
         }`}
       >
         <BiParagraph />
+      </button>
+      <button
+        onClick={handleAddImage}
+        className={`editor-btn ${
+          editor.isActive("paragraph") && "active-editor-btn"
+        }`}
+      >
+        <PiImageSquareBold />
+        <input
+          type="file"
+          name="photo"
+          className="sr-only"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          hidden
+        />
       </button>
 
       <button

@@ -10,7 +10,6 @@ import { getSinglePost, updatePost } from "../../../../Service/index/posts";
 import { toast } from "react-hot-toast";
 import { useSelector } from "react-redux";
 import Editor from "../../../../Editor/Editor";
-
 function EditPage() {
   const { slug } = useParams();
   const [initialPhoto, setInitialPhoto] = useState(null);
@@ -55,45 +54,49 @@ function EditPage() {
     setPhoto(file);
   };
 
-  const handleUpdatePost = () => {
+  const handleUpdatePost = async () => {
     let updateData = new FormData();
+
     if (!initialPhoto && photo) {
       updateData.append("postPicture", photo);
     } else if (initialPhoto && !photo) {
       const urlToObject = async (url) => {
         const response = await fetch(url);
         const blob = await response.blob();
-        return new File([blob], initialPhoto.name, { type: blob.type });
+        const file = new File([blob], initialPhoto.name, { type: blob.type });
+        return file;
       };
-      const file = urlToObject(stables.UPLOAD_FOLDER_BASE_URL + data?.photo);
-      updateData.append("postPicture", file);
+      const picture = await urlToObject(
+        stables.UPLOAD_FOLDER_BASE_URL + data?.photo
+      );
+      updateData.append("postPicture", picture);
     }
-    updateData.append("document", JSON.stringify({ body }));
 
+    updateData.append("document", JSON.stringify({ body }));
     mutateUpdatePost({ updateData, slug, token: userState.token });
   };
 
   return (
-    <section className="container mx-auto flex max-w-5xl flex-col px-5 py-5 lg:flex-row lg:items-start lg:gap-x-5">
+    <section className="container mx-auto flex w-full flex-col bg-white px-5 py-5 lg:flex-row lg:items-start lg:gap-x-5">
       {isLoading ? (
         <ArticleDetailSkeleton />
       ) : isError ? (
         <ErrorMessage message={"Oops something went wrong"} />
       ) : (
         <>
-          <article className="flex-1 md:mx-auto">
+          <article className="max-w-4xl flex-1 md:mx-auto">
             <label>
               {photo ? (
                 <img
                   src={URL.createObjectURL(photo)}
                   alt={data?.title}
-                  className="h-96 w-full rounded-md object-cover"
+                  className="h-96 w-full cursor-pointer rounded-md object-cover"
                 />
               ) : initialPhoto ? (
                 <img
                   src={stables.UPLOAD_FOLDER_BASE_URL + data?.photo}
                   alt={data?.title}
-                  className="h-96 w-full rounded-md object-cover"
+                  className="h-96 w-full cursor-pointer rounded-md object-cover"
                 />
               ) : (
                 <div
@@ -128,7 +131,7 @@ function EditPage() {
             <h1 className="mt-5 font-roboto text-3xl font-medium text-dark-hard">
               {data?.title}
             </h1>
-            <div className=" w-full">
+            <div className=" h-[50vh] w-full overflow-y-auto border border-gray-300 bg-white">
               {!isLoading && !isError && (
                 <Editor
                   content={data?.body}

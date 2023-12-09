@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-function NavCollapse({ title, icon, name, items, active, setActive }) {
+function NavCollapse({ title, icon, name, children, active, setActive }) {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -36,7 +36,7 @@ function NavCollapse({ title, icon, name, items, active, setActive }) {
       {isOpen && (
         <div className="collapse-content ">
           <div className="mt-5 flex flex-col gap-y-4">
-            {items.map((item, index) => (
+            {/* {items.map((item, index) => (
               <Link
                 to={item.link}
                 key={index}
@@ -45,7 +45,8 @@ function NavCollapse({ title, icon, name, items, active, setActive }) {
               >
                 {item.title}
               </Link>
-            ))}
+            ))} */}
+            {children}
           </div>
         </div>
       )}

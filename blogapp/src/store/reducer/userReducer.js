@@ -18,4 +18,6 @@ const userSlice = createSlice({
 const userActions = userSlice.actions;
 const userReducer = userSlice.reducer;
 
+export const userSelector = (state) => state.user.userInfo;
+
 export { userActions, userReducer };
