@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { parseJsonToHtml } from "../../../../Components/Helper/BodyPraser";
 import ArticleDetailSkeleton from "../../../ArticlesDetail/components/ArticleDetailPageSkeleton";
 import ErrorMessage from "../../../../Components/ErrorMessage";
@@ -9,19 +9,46 @@ import { HiOutlineCamera } from "react-icons/hi";
 import { getSinglePost, updatePost } from "../../../../Service/index/posts";
 import { toast } from "react-hot-toast";
 import { useSelector } from "react-redux";
+import CreateableSelect from "react-select/creatable";
 import Editor from "../../../../Editor/Editor";
+import MultiSelectTagDropdown from "../Header/SelectDropdown/multiSelectTagDropdown";
+import { getAllCategories } from "../../../../Service/index/postCategories";
+import {
+  filterCategories,
+  categoryToOption,
+} from "../../../../Utils/multiSelectTagUtil";
+
+const promiseOptions = async (inputValue) => {
+  const categoriesData = await getAllCategories();
+  return filterCategories(inputValue, categoriesData);
+};
+
 function EditPage() {
   const { slug } = useParams();
   const [initialPhoto, setInitialPhoto] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [body, setBody] = useState(null);
+  const [categories, setCategories] = useState(null);
+  const [title, setTitle] = useState(null);
+  const [tags, setTags] = useState(null);
+  const [caption, setCaption] = useState(null);
+  const [postSlug, setPostSlug] = useState(slug);
+
   const userState = useSelector((state) => state.user.userInfo);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { data, isLoading, isError } = useQuery({
     queryFn: () => getSinglePost({ slug }),
-    queryKey: ["data", `${slug}`],
     queryKey: ["data", slug],
+    onSuccess: (data) => {
+      setInitialPhoto(data?.photo);
+      setCategories(data?.categories.map((category) => category.value));
+      setTitle(data?.title);
+      setCaption(data?.caption);
+      setTags(data?.tags);
+    },
+    refetchOnWindowFocus: false,
   });
 
   const {
@@ -33,21 +60,16 @@ function EditPage() {
       updatePost({ updateData, slug, token }),
     mutationKey: ["updatePost"],
     onSuccess: (data) => {
+      console.log(data);
       queryClient.invalidateQueries(["data", slug]);
       toast.success("Post updated successfully");
+      navigate(`/admin/posts/manage/edit/${data?.slug}}`, { replace: true });
     },
     onError: (error) => {
       toast.error("Something went wrong");
       console.log(error);
     },
   });
-
-  useEffect(() => {
-    if (!isLoading && !isError) {
-      setInitialPhoto(data?.photo);
-      // setBody(parseJsonToHtml(data?.body));
-    }
-  }, [data, isError, isLoading]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -61,9 +83,9 @@ function EditPage() {
       updateData.append("postPicture", photo);
     } else if (initialPhoto && !photo) {
       const urlToObject = async (url) => {
-        const response = await fetch(url);
-        const blob = await response.blob();
-        const file = new File([blob], initialPhoto.name, { type: blob.type });
+        let response = await fetch(url);
+        let blob = await response.blob();
+        const file = new File([blob], initialPhoto, { type: blob.type });
         return file;
       };
       const picture = await urlToObject(
@@ -72,7 +94,10 @@ function EditPage() {
       updateData.append("postPicture", picture);
     }
 
-    updateData.append("document", JSON.stringify({ body }));
+    updateData.append(
+      "document",
+      JSON.stringify({ body, categories, title, caption, tags, slug: postSlug })
+    );
     mutateUpdatePost({ updateData, slug, token: userState.token });
   };
 
@@ -116,6 +141,17 @@ function EditPage() {
                 onChange={handleFileChange}
               />
             </label>
+            <div className="mt-5 flex gap-2">
+              <button
+                onClick={() => {
+                  setPhoto(null);
+                  setInitialPhoto(null);
+                }}
+                className="rounded-md bg-red-500 px-5 py-2 text-white"
+              >
+                Delete Image
+              </button>
+            </div>
             <div className="mt-4 flex gap-2">
               {data?.categories.map((category) => {
                 return (
@@ -128,9 +164,75 @@ function EditPage() {
                 );
               })}
             </div>
-            <h1 className="mt-5 font-roboto text-3xl font-medium text-dark-hard">
-              {data?.title}
-            </h1>
+            <div className="d-form-control w-full">
+              <label className="label" htmlFor="title">
+                <span className="label-text">Title</span>
+              </label>
+              <input
+                id="title"
+                className="input-bordered d-input border-slate-500 font-roboto text-3xl font-medium text-dark-hard !outline-gray-400 "
+                defaultValue={data?.title}
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </div>
+            <div className="d-form-control w-full">
+              <label className="label" htmlFor="slug">
+                <span className="label-text">Slug</span>
+              </label>
+              <input
+                id="slug"
+                className="d-input-bordered d-input border-slate-500 font-roboto text-3xl font-medium text-dark-hard !outline-gray-400 "
+                value={postSlug}
+                onChange={(e) =>
+                  setPostSlug(e.target.value.replace(/\s/g, "-"))
+                }
+                placeholder="Slug"
+              />
+            </div>
+
+            <div className="d-form-control w-full">
+              <label className="label" htmlFor="caption">
+                <span className="label-text">Caption</span>
+              </label>
+              <input
+                id="caption"
+                className="input-bordered d-input border-slate-500 font-roboto text-xl font-medium text-dark-hard !outline-gray-400 "
+                defaultValue={data?.caption}
+                value={caption}
+                onChange={(e) => setCaption(e.target.value)}
+              />
+            </div>
+
+            <div className="my-5">
+              <label className="label">
+                <span className="label-text">Categories</span>
+              </label>
+              <MultiSelectTagDropdown
+                loadOptions={promiseOptions}
+                defaultValue={data?.categories.map(categoryToOption)}
+                onChange={(newValue) =>
+                  setCategories(newValue?.map((item) => item.value))
+                }
+              />
+            </div>
+
+            <div className="my-5">
+              <label className="label">
+                <span className="label-text">Tags</span>
+              </label>
+              <CreateableSelect
+                isMulti
+                defaultValue={data?.tags.map((tags) => {
+                  return { value: tags, label: tags };
+                })}
+                onChange={(newValue) =>
+                  setTags(newValue?.map((item) => item.value))
+                }
+                className="relative z-20"
+              />
+            </div>
+
             <div className=" h-[50vh] w-full overflow-y-auto border border-gray-300 bg-white">
               {!isLoading && !isError && (
                 <Editor

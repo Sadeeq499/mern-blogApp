@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 
 function NavCollapse({ title, icon, name, children, active, setActive }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,7 +15,7 @@ function NavCollapse({ title, icon, name, children, active, setActive }) {
   };
 
   return (
-    <div className="collapse-arrow collapse min-h-0 rounded-none bg-base-200 py-2">
+    <div className="d-collapse-arrow d-collapse min-h-0 rounded-none bg-base-200 py-2">
       <input
         type="checkbox"
         className="-ml-4 min-h-0 "
@@ -24,7 +23,7 @@ function NavCollapse({ title, icon, name, children, active, setActive }) {
         onChange={handleToggle}
       />
       <div
-        className={`collapse-title flex min-h-0 items-center gap-x-2 py-0 text-lg font-medium ${
+        className={`d-collapse-title flex min-h-0 items-center gap-x-2 py-0 text-lg font-medium ${
           name === active
             ? "font-bold text-blue-500"
             : "font-semibold text-gray-500 hover:text-blue-500"
@@ -34,7 +33,7 @@ function NavCollapse({ title, icon, name, children, active, setActive }) {
         {title}
       </div>
       {isOpen && (
-        <div className="collapse-content ">
+        <div className="d-collapse-content ">
           <div className="mt-5 flex flex-col gap-y-4">
             {/* {items.map((item, index) => (
               <Link

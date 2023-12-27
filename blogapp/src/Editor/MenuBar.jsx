@@ -44,7 +44,9 @@ const MenuBar = ({ editor }) => {
   }
 
   return (
-    <div className="sticky left-0 right-0 top-3 z-10 flex flex-wrap gap-0.5 rounded-lg border border-slate-300 bg-white p-5">
+    <div
+      className="sticky left-0 right-0 top-3 z-10 flex flex-wrap gap-0.5 rounded-lg border border-slate-300 bg-white p-5"
+    >
       <button
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
         className={`editor-btn font-black ${

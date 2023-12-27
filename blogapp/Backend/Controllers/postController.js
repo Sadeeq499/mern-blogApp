@@ -1,12 +1,16 @@
 import { fileRemover } from "../helpers/fileRemover.js";
 import { uploadPicture } from "../middleware/pictureUpload.js";
 import Post from "../Models/PostModel.js";
+import PostCatag from "../Models/PostCategories.js";
 import { v4 as uuidv4 } from "uuid";
 import Comment from "../Models/CommentModel.js";
 
 // ---------------------------CreatePost -------------------------------------------------------
 export const CreatePostController = async (req, res, next) => {
   try {
+    // Fetch all categories and extract their _id values
+    const allcata = await PostCatag.find({}, { _id: 1 });
+    // Create a new post with the extracted category _id values
     const post = new Post({
       title: "sample title",
       caption: "sample Caption",
@@ -17,10 +21,16 @@ export const CreatePostController = async (req, res, next) => {
       },
       photo: "",
       user: req.user._id,
+      categories: allcata // Assigning the extracted category _id values here
     });
+
+    // Save the new post
     const createdPost = await post.save();
+
+    // Return the created post as JSON
     return res.json(createdPost);
   } catch (error) {
+    // Pass the error to the error handling middleware
     next(error);
   }
 };
@@ -102,9 +112,15 @@ export const DeletePostController = async (req, res, next) => {
 export const getPostController = async (req, res, next) => {
   try {
     const post = await Post.findOne({ slug: req.params.slug }).populate([
+
       {
         path: "user",
         select: ["name", "avatar"],
+      },
+
+      {
+        path: "categories",
+        select: ["title"],
       },
       {
         path: "comments",
@@ -133,6 +149,8 @@ export const getPostController = async (req, res, next) => {
       },
     ]);
 
+    console.log(post);
+
     if (!post) {
       const err = new Error("Post not found");
       next(err);
@@ -153,11 +171,11 @@ export const getAllPosts = async (req, res, next) => {
     }
     let query = Post.find(where);
     const page = parseInt(req.query.page) || 1;
-    const pageSize = parseInt(req.query.limit) ||10;
+    const pageSize = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * pageSize;
     const total = await Post.find(where).countDocuments();
     const pages = Math.ceil(total / pageSize);
-    
+
     res.header({
       "X_Total_Count": JSON.stringify(total),
       "X_Total_Pages": JSON.stringify(pages),
@@ -167,7 +185,7 @@ export const getAllPosts = async (req, res, next) => {
     });
 
     if (page > pages) {
-       return res.json([]);
+      return res.json([]);
     }
     const results = await query
       .skip(skip)
@@ -180,7 +198,7 @@ export const getAllPosts = async (req, res, next) => {
       ])
       .sort({ createdAt: -1 });
 
-    
+
     res.json(results);
   } catch (error) {
     next(error);

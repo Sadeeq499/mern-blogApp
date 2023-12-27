@@ -6,6 +6,7 @@ import connectDB from "./Config/db.js";
 import userRote from "./Routes/userRoute.js";
 import postRoute from "./Routes/postRoute.js";
 import CommentRoute from "./Routes/commentsRoute.js";
+import PostCategoriesRoute from "./Routes/postCategoriesRoute.js"
 import path from "path";
 import express from "express";
 import { fileURLToPath } from "url";
@@ -42,9 +43,9 @@ app.get("/", (req, res) => {
 app.use("/api/users", userRote);
 app.use("/api/posts", postRoute);
 app.use("/api/createComment", CommentRoute);
+app.use("/api/post-categories", PostCategoriesRoute)
 
 // static assets
-
 app.use("/Uploads", express.static(path.join(__dirname, "/Uploads")));
 
 // error handling
